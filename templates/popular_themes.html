@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="row clearfix">
+    <h1>Popular Themes</h1>
+    <div class="col-md-12 column">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for video in videos %}
+          <tr>
+            <td>{{ video.id }}</td>
+            <td>{{ video.name }}</td>
+            <td>{{ video.score }}</td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+  </div>
+{% endblock %}
