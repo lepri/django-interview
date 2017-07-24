@@ -9,7 +9,7 @@ class PopularThemes(View):
 
     def get(self, request):
         videos = Video.objects.all()
-        videos_list = []
+        themes_list = []
         for video in videos:
             views = video.views
             time_factor = self.get_time_factor(video)
@@ -17,14 +17,37 @@ class PopularThemes(View):
             thumbs_up = self.get_thumbs_up(video)
             positive_factor = 0.7 * good_comments + 0.3 * thumbs_up
             score = views * time_factor * positive_factor
-            video_dict = {
-                'id': video.id,
-                'name': video.title,
-                'score': score
-            }
-            videos_list.append(video_dict)
-        videos_list = sorted(videos_list, key=itemgetter('score'), reverse=True)
-        params = {'videos': videos_list }
+            themes = video.themes.values()
+
+            for theme in themes:
+                themes_dict = {
+                    'id': theme['id'],
+                    'name': theme['name'],
+                    'score': score
+                }
+                themes_list.append(themes_dict)
+
+        # temporary list to save the themes list ordered by id
+        themes_tmp_list = sorted(themes_list, key=itemgetter('id'),
+                                 reverse=False)
+        themes_list = []
+        theme_dict = {}
+        for theme in themes_tmp_list:
+            if theme['id'] in theme_dict.values():
+                theme_dict['score'] += theme['score']
+            elif len(theme_dict) == 0:
+                theme_dict['id'] = theme['id']
+                theme_dict['name'] = theme['name']
+                theme_dict['score'] = theme['score']
+            else:
+                themes_list.append(theme_dict)
+                theme_dict = {'id': theme['id'],
+                              'name': theme['name'],
+                              'score': theme['score']
+                              }
+
+        themes_list = sorted(themes_list, key=itemgetter('score'), reverse=True)
+        params = {'themes': themes_list }
         return render(request, 'popular_themes.html', params)
 
     def get_time_factor(self, video):
