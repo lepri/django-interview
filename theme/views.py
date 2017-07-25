@@ -15,7 +15,7 @@ class PopularThemes(View):
             time_factor = self.get_time_factor(video)
             good_comments = self.get_good_comments(video)
             thumbs_up = self.get_thumbs_up(video)
-            positive_factor = 0.7 * good_comments + 0.3 * thumbs_up
+            positive_factor = (0.7 * good_comments) + (0.3 * thumbs_up)
             score = views * time_factor * positive_factor
             themes = video.themes.values()
 
@@ -45,6 +45,7 @@ class PopularThemes(View):
                               'name': theme['name'],
                               'score': theme['score']
                               }
+        themes_list.append(theme_dict)
 
         themes_list = sorted(themes_list, key=itemgetter('score'), reverse=True)
         params = {'themes': themes_list }
